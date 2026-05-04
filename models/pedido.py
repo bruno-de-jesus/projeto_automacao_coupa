@@ -3,7 +3,7 @@ from typing import List, Optional
 from enum import Enum, auto
 from datetime import date
 
-# definição de tipos com enum
+# definição de tipos de pedidos com enum
 class TipoPedido(Enum):
     MATERIAL = auto()
     SERVICO = auto()
@@ -15,6 +15,7 @@ class InformacoesGerais:
     fornecedor: str
     texto_cabecalho: str
     tipo: TipoPedido
+    orcamento: Optional[str] = None
 
 # hierarquia do faturamento (mãe) 
 @dataclass
@@ -57,5 +58,5 @@ class ItemServico(Item):
 @dataclass
 class Pedido:
     informacoes: InformacoesGerais
-    Faturamento = Faturamento
+    faturamento: Faturamento
     itens: List(Item) = field(default_factory=list)
