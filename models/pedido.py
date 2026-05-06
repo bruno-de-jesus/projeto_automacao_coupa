@@ -25,11 +25,11 @@ class Faturamento:
 
 # faturamento (filhos)
 @dataclass
-class CentroCusto(Faturamento):
+class CustoCentro(Faturamento):
     centro_custo: str
 
 @dataclass
-class ContaAPP(Faturamento):
+class CustoAPP(Faturamento):
     conta_app: str
 
 # hierarquia de itens (mãe)
