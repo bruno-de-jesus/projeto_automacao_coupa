@@ -1,4 +1,6 @@
+import time
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -9,10 +11,18 @@ class BasePreencher:
         self.wait = WebDriverWait(driver, timeout)
 
     def preencher_input(self, by, value, texto):
-        element = self.wait.until(EC.element_to_be_clickable((by, value)))
+        element = self.wait.until(
+            EC.element_to_be_clickable(
+                (by, value)
+            )
+        )
         element.clear()
         element.send_keys(texto)
+        return element
 
     def selecionar_primeira_opcao(self, element):
+        element.send_keys(Keys.ARROW_DOWN)
+        time.sleep(2)
+        
         element.send_keys(Keys.ARROW_DOWN)
         element.send_keys(Keys.ENTER)
