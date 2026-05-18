@@ -30,45 +30,63 @@ class PreencherInfoGerais(BasePreencher):
         self._preencher_coluna_direita(info)
         self._anexar_orcamento(info)
 
-    def _preencher_solicitante(self, valor):
-        em_nome_de = self.preencher_input(
+    def _preencher_solicitante(self, dado):
+        em_nome_de = self.buscar_elemento(
             By.XPATH,
-            "//input[@name='requisition_header[on_behalf_of]']",
-            valor.solicitante
-            )
+            "//input[@name='requisition_header[on_behalf_of]']"
+        )
+        self.preencher_input(em_nome_de, dado.solicitante)
         self.selecionar_primeira_opcao(em_nome_de)
 
         print("fim do solicitante")
 
-    def _preencher_coluna_esquerda(self, valor):
-        empresa_centro = self.preencher_input(
+    def _preencher_coluna_esquerda(self, dado):
+
+        empresa_centro = self.buscar_elemento(
+            By.XPATH,
+            "//div[@id='requisition_header_custom_field_4_id_chosen']"
+        )
+        
+        texto_cabecalho = self.buscar_elemento(
+            By.XPATH,
+            "//textarea[@name='requisition_header[custom_field_5]']"
+        )
+        botao_locacao = self.buscar_elemento(
+            By.XPATH,
+            "//input[@id='requisition_header_custom_field_7_no']"
+        )
+        self.centralizar_botao(empresa_centro)
+        self.apertar_botao(empresa_centro)
+        
+        empresa_centro_input = self.buscar_elemento(
             By.XPATH,
             "//input[@aria-label='Empresa - Centro']",
-            "0545"
         )
-        self.selecionar_primeira_opcao()
         
-        empresa_centro.send_keys("7320")
-        self.selecionar_primeira_opcao()
-
-        texto_cabecalho = self.preencher_input(
-            By.XPATH,
-            "//textarea[@name='requisition_header[custom_field_5]']",
-            valor.texto_cabecalho
-        )
-
-        botao_locacao = self.wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//input[@id='requisition_header_custom_field_7_no']")
-            )
-        )
-
+        self.preencher_input(empresa_centro_input, "0545")
+        self.selecionar_primeira_opcao(empresa_centro_input)
+        self.preencher_input(empresa_centro_input, "7320")
+        self.selecionar_primeira_opcao(empresa_centro_input)
+        self.preencher_input(texto_cabecalho, dado.texto_cabecalho)
+        
+        self.centralizar_botao(botao_locacao)
         if not botao_locacao.is_selected():
-            botao_locacao.click()
+            self.apertar_botao(botao_locacao)
 
         print("fim da coluna esquerda")
 
     def _preencher_coluna_direita(self, valor):
-        print()
+        endereco = self.buscar_elemento(
+            By.XPATH,
+            "//img[@title='Escolher um endereço']"
+        )
+        self.centralizar_botao(endereco)
+        self.apertar_botao(endereco)
+        
+        #selecionando endereço 7320
+        
+        
+        
+        
     def _anexar_orcamento(self, valor):
         print()

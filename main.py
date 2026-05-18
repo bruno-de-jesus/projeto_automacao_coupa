@@ -4,10 +4,12 @@ from selenium import webdriver
 from selenium.webdriver.edge.options import Options
 
 # importando data class e ações
+
 from models.Pedido import Pedido
 from models.InformacoesGerais import InformacoesGerais 
 from models.TipoPedido import TipoPedido
 from services.steps.preencher_info_gerais import PreencherInfoGerais
+from services.steps.navegar_coupa import NavegarPedido
 
 
 def conectar_navegador(): # configurar e conectar navegador
@@ -21,15 +23,19 @@ def conectar_navegador(): # configurar e conectar navegador
 
 def main():
     # 1. preparação dos dados
-
+    
+    solicitante = "f57491"
     fornecedor = "C1 DIMENSIONAL"
+    texto_cabecalho = f"COMPRA DE MATERIAIS ELETRICOS #12345 - {fornecedor}"
+    tipo = TipoPedido.MATERIAL
+    orcamento = "C:/ORÇAMENTOS/DIMENSIONAL/12345.PDF"
 
     pedido_info = InformacoesGerais(
-        solicitante = "f57491",
+        solicitante = solicitante,
         fornecedor = fornecedor,
-        texto_cabecalho = f"COMPRA DE MATERIAIS ELETRICOS #12345 - {fornecedor}",
-        tipo = TipoPedido.MATERIAL,
-        orcamento = "C:/ORÇAMENTOS/DIMENSIONAL/12345.PDF"
+        texto_cabecalho = texto_cabecalho,
+        tipo = tipo,
+        orcamento = orcamento
     )
 
     pedido_itens = [
@@ -45,18 +51,16 @@ def main():
     # 2. iniciar automação
     driver = conectar_navegador()
 
+    navegacao = NavegarPedido(driver) #abrir/navegar site
+    navegacao.acessar_coupa()
+    navegacao.acessar_pedido()
+
     try:
         print(f"conectando ao Edge. Criando pedido: {pedido_obj.informacoes.texto_cabecalho}")
 
         # chamada para as funções de execução
         preenchimento = PreencherInfoGerais(driver)
-
-        print("saiu do preenchimento 1")
-
         preenchimento.executar(pedido_obj.informacoes)
-        print("saiu do preenchimento 2")
-
-        print("automação concluída")
 
     except Exception as e:
         print(f"Erro ao executar automação: {e}")
