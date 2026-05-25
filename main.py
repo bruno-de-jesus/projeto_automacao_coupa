@@ -4,7 +4,6 @@ from selenium import webdriver
 from selenium.webdriver.edge.options import Options
 
 # importando data class e ações
-
 from models.Pedido import Pedido
 from models.InformacoesGerais import InformacoesGerais 
 from models.TipoPedido import TipoPedido
@@ -28,7 +27,7 @@ def main():
     fornecedor = "C1 DIMENSIONAL"
     texto_cabecalho = f"COMPRA DE MATERIAIS ELETRICOS #12345 - {fornecedor}"
     tipo = TipoPedido.MATERIAL
-    orcamento = "C:/ORÇAMENTOS/DIMENSIONAL/12345.PDF"
+    orcamento = "C:/ORÇAMENTOS/DIMENSIONAL/14508_5080661.PDF"
 
     pedido_info = InformacoesGerais(
         solicitante = solicitante,
@@ -56,8 +55,6 @@ def main():
     navegacao.acessar_pedido()
 
     try:
-        print(f"conectando ao Edge. Criando pedido: {pedido_obj.informacoes.texto_cabecalho}")
-
         # chamada para as funções de execução
         preenchimento = PreencherInfoGerais(driver)
         preenchimento.executar(pedido_obj.informacoes)

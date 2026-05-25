@@ -17,6 +17,11 @@ class BasePreencher:
             )
         )
 
+    def buscar_elemento_lambda(self, by, value, timeout=10):
+        return WebDriverWait(self.driver, timeout).until(
+            lambda d: d.find_element(by, value)
+        )
+
     def preencher_input(self, element, texto):
         element.clear()
         element.send_keys(texto)
