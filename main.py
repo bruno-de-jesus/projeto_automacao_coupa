@@ -1,66 +1,34 @@
-import os
-from dotenv import load_dotenv
-from selenium import webdriver
-from selenium.webdriver.edge.options import Options
+import logging
+from backend.services.environment_service import EnvironmentService, EnvironmentValidationError
+from backend.base.driver_factory import DriverFactory
 
-# importando data class e ações
-from models.Pedido import Pedido
-from models.InformacoesGerais import InformacoesGerais 
-from models.TipoPedido import TipoPedido
-from services.steps.preencher_info_gerais import PreencherInfoGerais
-from services.steps.navegar_coupa import NavegarPedido
+# Configuração de Logs no Console
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
-
-def conectar_navegador(): # configurar e conectar navegador
-    load_dotenv()
-    port = os.getenv("EDGE_DEBUG_PORT")
-
-    edge_options = Options()
-    edge_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{port}")
-
-    return webdriver.Edge(options=edge_options)
-
-def main():
-    # 1. preparação dos dados
+def run():
+    env_service = EnvironmentService()
     
-    solicitante = "f57491"
-    fornecedor = "C1 DIMENSIONAL"
-    texto_cabecalho = f"COMPRA DE MATERIAIS ELETRICOS #12345 - {fornecedor}"
-    tipo = TipoPedido.MATERIAL
-    orcamento = "C:/ORÇAMENTOS/DIMENSIONAL/14508_5080661.PDF"
-
-    pedido_info = InformacoesGerais(
-        solicitante = solicitante,
-        fornecedor = fornecedor,
-        texto_cabecalho = texto_cabecalho,
-        tipo = tipo,
-        orcamento = orcamento
-    )
-
-    pedido_itens = [
-
-    ]
-
-    pedido_faturamento = [
-
-    ]
-
-    pedido_obj = Pedido(informacoes=pedido_info, itens=pedido_itens, faturamento=pedido_faturamento)
-
-    # 2. iniciar automação
-    driver = conectar_navegador()
-
-    navegacao = NavegarPedido(driver) #abrir/navegar site
-    navegacao.acessar_coupa()
-    navegacao.acessar_pedido()
-
     try:
-        # chamada para as funções de execução
-        preenchimento = PreencherInfoGerais(driver)
-        preenchimento.executar(pedido_obj.informacoes)
+        # Step 1: Validações Pré-execução (HU01)
+        env_service.validate_all()
+        
+        # Step 2: Teste de Inicialização da Infraestrutura do Browser
+        print("\n--- Iniciando Teste de WebDriver ---")
+        driver = DriverFactory.create_driver(headless=False)
+        driver.get(env_service.coupa_url)
+        print(f"Página acessada com sucesso: {driver.title}")
+        
+        # Encerra com segurança
+        driver.quit()
+        print("--- Teste da Sprint 1 Concluído com Sucesso! ---")
 
+    except EnvironmentValidationError as e:
+        logging.error(f"Execução bloqueada por trava de segurança: {e}")
     except Exception as e:
-        print(f"Erro ao executar automação: {e}")
+        logging.error(f"Erro não esperado durante a execução: {e}")
 
 if __name__ == "__main__":
-    main()
+    run()
