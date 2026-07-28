@@ -55,7 +55,7 @@ class EnvironmentService:
         Executa a suíte completa de validações prévias.
         Lança EnvironmentValidationError caso algum pré-requisito falhe.
         """
-        logger.info("Iniciando bateria de validações de ambiente (HU01)...")
+        logger.info("Iniciando bateria de validações de ambiente...")
         
         if not self.check_internet_connection():
             raise EnvironmentValidationError("Sem conexão com a internet. Verifique sua rede e tente novamente.")
