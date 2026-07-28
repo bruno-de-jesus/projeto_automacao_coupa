@@ -1,2 +1,21 @@
+# --- Byte-compiled / Python Cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Ambiente Virtual ---
+venv/
+env/
+ENV/
+
+# --- Variáveis de Ambiente & Segredos ---
 .env
-venv
+
+# --- Configurações da IDE ---
+.vscode/
+.idea/
+
+# --- Build / Compilação (.exe) ---
+build/
+dist/
+*.spec
