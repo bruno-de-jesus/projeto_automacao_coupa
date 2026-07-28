@@ -1,34 +1,25 @@
+import sys
 import logging
-from backend.services.environment_service import EnvironmentService, EnvironmentValidationError
-from backend.base.driver_factory import DriverFactory
+from PySide6.QtWidgets import QApplication
+from frontend.main_window import MainWindow
 
-# Configuração de Logs no Console
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+def setup_global_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    )
 
-def run():
-    env_service = EnvironmentService()
+def main():
+    setup_global_logging()
     
-    try:
-        # Step 1: Validações Pré-execução (HU01)
-        env_service.validate_all()
-        
-        # Step 2: Teste de Inicialização da Infraestrutura do Browser
-        print("\n--- Iniciando Teste de WebDriver ---")
-        driver = DriverFactory.create_driver(headless=False)
-        driver.get(env_service.coupa_url)
-        print(f"Página acessada com sucesso: {driver.title}")
-        
-        # Encerra com segurança
-        driver.quit()
-        print("--- Teste da Sprint 1 Concluído com Sucesso! ---")
-
-    except EnvironmentValidationError as e:
-        logging.error(f"Execução bloqueada por trava de segurança: {e}")
-    except Exception as e:
-        logging.error(f"Erro não esperado durante a execução: {e}")
+    # Inicializa o loop de eventos da interface gráfica
+    app = QApplication(sys.argv)
+    
+    # Instancia e exibe a janela principal
+    window = MainWindow()
+    window.show()
+    
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
-    run()
+    main()
