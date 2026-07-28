@@ -66,4 +66,4 @@ class EnvironmentService:
         if not self.check_coupa_availability():
             raise EnvironmentValidationError("O sistema Coupa está indisponível ou inacessível no momento.")
 
-        logger.info("Todas as validações de ambiente (HU01) foram concluídas com sucesso!")
+        logger.info("Todas as validações de ambiente foram concluídas com sucesso!")
