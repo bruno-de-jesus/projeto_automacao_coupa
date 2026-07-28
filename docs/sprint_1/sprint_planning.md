@@ -1,7 +1,7 @@
 # PLANEJAMENTO DE SPRINT — SPRINT 1
 
 > **Épico:** Épico 01 — Infraestrutura Base & Reestruturação Arquitetural  
-> **Status:** Em Andamento (Kick-off)  
+> **Status:** Finalizado 
 > **Objetivo da Sprint:** Construir a estrutura de diretórios em camadas, implementar a infraestrutura base do Selenium/WebDriver e entregar o módulo de validações de pré-execução de ambiente (HU01).
 
 ---
@@ -22,10 +22,10 @@
 - **Para que** a automação não falhe no meio do processo ou trave por indisponibilidade técnica.
 
 #### Critérios de Aceite:
-- [ ] Validar conexão ativa com a internet (`check_internet_connection`).
-- [ ] Validar se o endpoint do Coupa está acessível e respondendo com status HTTP válido (200/302).
-- [ ] Validar presença de credenciais/dados mínimos necessários de execução.
-- [ ] Bloquear o disparo do WebDriver e emitir log/notificação clara de erro caso qualquer pré-requisito falhe.
+- [x] Validar conexão ativa com a internet (`check_internet_connection`).
+- [x] Validar se o endpoint do Coupa está acessível e respondendo com status HTTP válido (200/302).
+- [x] Validar presença de credenciais/dados mínimos necessários de execução.
+- [x] Bloquear o disparo do WebDriver e emitir log/notificação clara de erro caso qualquer pré-requisito falhe.
 
 ---
 
@@ -71,3 +71,9 @@ A Sprint 1 será considerada **concluída** quando:
 1. A estrutura de diretórios estiver criada e com imports funcionais.
 2. O script de validação de ambiente (`environment_service.py`) for capaz de validar internet e Coupa antes de subir o browser.
 3. A `BasePage` e o `DriverFactory` permitirem abrir e fechar o navegador de forma automatizada e segura sem vazamento de processos (`driver.quit()`).
+
+## 4. Sprint Review & Retrospectiva
+
+- **Resultado da Review:** Todos os critérios de aceite da HU01 e entregáveis técnicos foram validados e aprovados.
+- **O que funcionou bem:** Separação limpa em camadas desde o primeiro dia e validação de ambiente via `requests` sem precisar abrir o navegador.
+- **Pontos de Ação:** Garantir a criação das Dataclasses na Sprint 2 mantendo isolamento total da camada de automação.
