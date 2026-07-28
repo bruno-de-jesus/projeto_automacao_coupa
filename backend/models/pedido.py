@@ -1,9 +1,12 @@
 from dataclasses import dataclass, field
 from typing import List
+from backend.models.informacoes_gerais import InformacoesGerais
+from backend.models.custo import Custo
+from backend.models.item import Item
 
-# classe principal
 @dataclass
 class Pedido:
+    """Entidade agregadora principal do domínio."""
     informacoes: InformacoesGerais
-    faturamento: Faturamento
-    itens: List(Item) = field(default_factory=list)
+    custo: Custo
+    itens: List[Item] = field(default_factory=list)

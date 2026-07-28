@@ -1,7 +1,15 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-# hierarquia do faturamento (mãe) 
 @dataclass
 class Custo:
+    """Classe mãe para alocação de custos/faturamento."""
     alocacao: str
     conta_faturamento: str
+
+@dataclass
+class CustoAPP(Custo):
+    conta_app: str = ""
+
+@dataclass
+class CustoCentro(Custo):
+    centro_custo: str = ""

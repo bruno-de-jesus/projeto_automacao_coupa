@@ -1,8 +1,6 @@
 from dataclasses import dataclass
+from backend.models.tipo_pedido import TipoPedido
 
-from models.TipoPedido import TipoPedido
-
-# informações gerais do pedido
 @dataclass
 class InformacoesGerais:
     solicitante: str
@@ -15,18 +13,17 @@ class InformacoesGerais:
         self._validar()
 
     def _validar(self):
-        # Campo obrigatório
         if not self.solicitante or not self.solicitante.strip():
-            raise ValueError("Solicitante é obrigatório")
+            raise ValueError("Solicitante é obrigatório.")
 
         if not self.fornecedor or not self.fornecedor.strip():
-            raise ValueError("Fornecedor é obrigatório")
+            raise ValueError("Fornecedor é obrigatório.")
 
         if not self.texto_cabecalho or not self.texto_cabecalho.strip():
-            raise ValueError("Texto do cabeçalho é obrigatório")
+            raise ValueError("Texto do cabeçalho é obrigatório.")
 
         if not isinstance(self.tipo, TipoPedido):
-            raise ValueError("Tipo deve ser do tipo TipoPedido")
+            raise ValueError("Tipo deve ser uma instância válida de TipoPedido.")
 
         if not self.orcamento or not self.orcamento.strip():
-            raise ValueError("Pedido de COMPRA deve ter orçamento")
+            raise ValueError("Pedido de COMPRA deve conter orçamento.")
