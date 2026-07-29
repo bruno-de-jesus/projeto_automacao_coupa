@@ -13,6 +13,7 @@ class AutomationWorker(QThread):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.driver = None
 
     def run(self):
         """Método executado automaticamente ao chamar worker.start()."""
@@ -22,18 +23,29 @@ class AutomationWorker(QThread):
         try:
             # Step 1: Validações Pré-execução (HU01)
             env_service.validate_all()
+
+            if self.isInterruptionRequested():
+                logger.warning("Execução cancelada pelo usuário antes da inicialização do navegador.")
+                self.finished_signal.emit(False, "Processo cancelado pelo usuário.")
+                return
             
             # Step 2: Teste de Inicialização do Browser
             logger.info("Iniciando WebDriver para navegação...")
-            driver = DriverFactory.create_driver(headless=False)
-            driver.get(env_service.coupa_url)
-            logger.info(f"Página acessada com sucesso: {driver.title}")
+            self.driver = DriverFactory.create_driver(headless=False)
             
-            # Encerra o driver ao concluir esta etapa de teste
-            driver.quit()
+            if self.isInterruptionRequested():
+                logger.warning("Execução cancelada pelo usuário após abertura do navegador.")
+                self._close_driver()
+                self.finished_signal.emit(False, "Processo cancelado pelo usuário.")
+                return
+
+            self.driver.get(env_service.coupa_url)
+            logger.info(f"Página acessada com sucesso: {self.driver.title}")
+            
+            # Encerra o driver com segurança
+            self._close_driver()
             logger.info("Validação prévia e teste de browser concluídos com sucesso!")
             
-            # Notifica a interface sobre a conclusão bem-sucedida
             self.finished_signal.emit(True, "Validação de ambiente realizada com sucesso!")
 
         except EnvironmentValidationError as e:
@@ -42,3 +54,20 @@ class AutomationWorker(QThread):
         except Exception as e:
             logger.error(f"Erro não esperado durante a execução da automação: {e}")
             self.finished_signal.emit(False, f"Erro inesperado: {e}")
+        finally:
+            self._close_driver()
+
+    def stop_process(self):
+        """Solicita a interrupção amigável da Thread e fecha o navegador se estiver aberto."""
+        logger.info("Solicitação de cancelamento enviada ao Worker...")
+        self.requestInterruption()
+        self._close_driver()
+
+    def _close_driver(self):
+        if self.driver:
+            try:
+                self.driver.quit()
+                self.driver = None
+                logger.info("Navegador encerrado com sucesso.")
+            except Exception:
+                pass

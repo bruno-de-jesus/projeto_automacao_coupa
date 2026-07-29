@@ -51,7 +51,35 @@ class MainWindow(QMainWindow):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
+        # Largura Fixa Padronizada para ambos os botões
+        BUTTON_WIDTH = 160
+
+        # Botão de Cancelar (Fica desabilitado por padrão)
+        self.btn_cancelar = QPushButton("Cancelar")
+        self.btn_cancelar.setFixedWidth(BUTTON_WIDTH)
+        self.btn_cancelar.setEnabled(False)
+        self.btn_cancelar.setStyleSheet("""
+            QPushButton {
+                background-color: #D9534F;
+                color: white;
+                font-weight: bold;
+                padding: 8px 16px;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #C9302C;
+            }
+            QPushButton:disabled {
+                background-color: #E0E0E0;
+                color: #A0A0A0;
+            }
+        """)
+        self.btn_cancelar.clicked.connect(self._on_cancelar_click)
+        button_layout.addWidget(self.btn_cancelar)
+
+        # Botão Iniciar Automação
         self.btn_iniciar = QPushButton("Iniciar Automação")
+        self.btn_iniciar.setFixedWidth(BUTTON_WIDTH)
         self.btn_iniciar.setStyleSheet("""
             QPushButton {
                 background-color: #007ACC;
@@ -64,7 +92,8 @@ class MainWindow(QMainWindow):
                 background-color: #005999;
             }
             QPushButton:disabled {
-                background-color: #A0A0A0;
+                background-color: #E0E0E0;
+                color: #A0A0A0;
             }
         """)
         self.btn_iniciar.clicked.connect(self._on_iniciar_click)
@@ -76,16 +105,22 @@ class MainWindow(QMainWindow):
         """Slot disparado ao clicar no botão 'Iniciar Automação'."""
         logger.info("Iniciando requisição de automação em background...")
         
-        # Desabilita o botão para impedir disparos múltiplos concorrentes
+        # Alterna o estado de ativação dos botões
         self.btn_iniciar.setEnabled(False)
         self.btn_iniciar.setText("Executando...")
+        self.btn_cancelar.setEnabled(True)
 
         # Instancia e configura a Worker Thread
         self.worker = AutomationWorker()
         self.worker.finished_signal.connect(self._on_automation_finished)
-        
-        # Inicia a execução em background (chama a função run() do worker)
         self.worker.start()
+
+    def _on_cancelar_click(self):
+        """Slot disparado ao clicar no botão 'Cancelar'."""
+        if self.worker and self.worker.isRunning():
+            logger.info("Usuário solicitou o cancelamento da automação...")
+            self.btn_cancelar.setEnabled(False)
+            self.worker.stop_process()
 
     @Slot(bool, str)
     def _on_automation_finished(self, success: bool, message: str):
@@ -93,8 +128,9 @@ class MainWindow(QMainWindow):
         if success:
             logger.info(f"Status da Automação: {message}")
         else:
-            logger.error(f"Falha na Automação: {message}")
+            logger.warning(f"Status Final: {message}")
 
-        # Restaura o estado original do botão na interface
+        # Restaura o estado original de ambos os botões
         self.btn_iniciar.setEnabled(True)
         self.btn_iniciar.setText("Iniciar Automação")
+        self.btn_cancelar.setEnabled(False)
