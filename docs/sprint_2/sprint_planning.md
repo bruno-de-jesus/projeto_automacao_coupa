@@ -2,7 +2,7 @@
 
 > **Épicos:** Épico 02 — Interface Desktop (PySide6) & Épico 03 — Automação Coupa (POM)
 > **Status:** Em Andamento
-> **Objetivo da Sprint:** Implementar a camada de Domain Models (Dataclasses), criar a janela principal em PySide6 com formulários completos (Usuários, Informações Gerais, Itens e Custo) e console de log, e construir a `HeaderPage` para o Coupa.
+> **Objetivo da Sprint:** Implementar a camada de Domain Models (Dataclasses), criar a janela principal em PySide6 com formulários completos (Usuários, Informações Gerais, Itens e Custo) e console de log em tempo real com suporte a Multithreading (Worker Thread / Cancelamento), e construir a `HeaderPage` para o Coupa.
 
 ---
 
@@ -24,17 +24,19 @@
 
 ---
 
-### 1.2 HU02 — Interface de Entrada de Dados (GUI) — [EM ANDAMENTO]
+### 1.2 HU02 — Interface de Entrada de Dados (GUI) & Infraestrutura Assíncrona — [EM ANDAMENTO]
 - **Como** planejador,  
-- **Quero** uma interface gráfica intuitiva e centralizada,  
-- **Para que** eu possa preencher todos os dados da PR em uma única tela e acompanhar a execução da automação em tempo real.
+- **Quero** uma interface gráfica intuitiva, responsiva e não-bloqueante,  
+- **Para que** eu possa preencher todos os dados da PR em uma única tela, acompanhar a execução em tempo real e cancelar o processo se necessário.
 
-#### Critérios de Aceite (Ajustados):
+#### Critérios de Aceite & Evoluções Aplicadas:
+- [x] **Infraestrutura Multithread (`QThread`):** Implementado `AutomationWorker` em `frontend/automation_worker.py` para isolar tarefas bloqueantes de Selenium/Rede da Main UI Thread.
+- [x] **Controle de Cancelamento:** Botão "Cancelar" com tamanho padronizado (160px) adicionado ao lado do botão "Iniciar Automação", com suporte a interrupção graciosa via `stop_process()`.
+- [x] **Console de Logs:** Redirecionamento de logs do `logging` nativo via `QSignalingLogHandler` em tempo real para a interface (`LogConsoleWidget`).
 - [ ] **Módulo de Usuários:** Campos para inserção/seleção de Solicitante e Observadores.
 - [ ] **Módulo de Informações Gerais:** Formulário com Justificativa, Fornecedor e Tipo de Pedido.
 - [ ] **Módulo de Alocação de Custo:** Seletor dinâmico para Centro de Custo ou Ordem APP.
 - [ ] **Tabela de Itens:** Grade interativa para adição/remoção de Materiais/Serviços (Quantidade, Preço, NCM, etc.).
-- [ ] **Console de Logs:** Área de exibição de status e logs em tempo real na interface.
 - [ ] **Disparo e Conversão:** Botão que valida os campos da GUI e gera uma instância válida da Dataclass `Pedido`.
 
 ---
@@ -53,8 +55,10 @@ projeto_automacao_coupa/
 │
 ├── frontend/
 │   ├── views/
-│   ├── components/             # FormAtributos, TabelaItens, ConsoleLog
-│   └── main_window.py          # Janela principal PySide6
+│   ├── components/
+│   │   └── log_console.py      # Console de logs Qt em tempo real [CONCLUÍDO]
+│   ├── automation_worker.py    # Thread assíncrona QThread com stop_process() [CONCLUÍDO]
+│   └── main_window.py          # Janela principal PySide6 [CONCLUÍDO]
 │
 ├── backend/
 │   ├── base/
@@ -74,7 +78,7 @@ projeto_automacao_coupa/
 │
 ├── resources/
 ├── .env
-├── main.py
+├── main.py                     # Entry point da GUI Qt
 └── requirements.txt
 ```
 
@@ -84,6 +88,6 @@ projeto_automacao_coupa/
 
 A Sprint 2 será considerada **concluída** quando:
 1. [x] Os dados e classes de domínio estiverem corrigidos, validados e estruturados em Dataclasses puras sem acoplamento.
-2. [ ] A GUI em PySide6 permitir a inserção de Usuários, Informações Gerais, Alocação de Custo e Tabela de Itens, convertendo-os na Dataclass `Pedido`.
-3. [ ] A `HeaderPage` for capaz de navegar e preencher o cabeçalho no ambiente de homologação do Coupa sem erros.
-4. [ ] Os logs da execução forem exibidos em tempo real no console visual da GUI.
+2. [x] A interface possuir execução assíncrona via `QThread`, garantindo responsividade da janela e opção de cancelamento sem congelamento da tela.
+3. [ ] A GUI em PySide6 permitir a inserção de Usuários, Informações Gerais, Alocação de Custo e Tabela de Itens, convertendo-os na Dataclass `Pedido`.
+4. [ ] A `HeaderPage` for capaz de navegar e preencher o cabeçalho no ambiente de homologação do Coupa sem erros.
